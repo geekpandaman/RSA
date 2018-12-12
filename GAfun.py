@@ -82,13 +82,14 @@ def init_speed(nodes):
                 speed=round(np.random.choice(rand_speed),2)
             link.speed=speed  #取两位小数
 
-def read_speed(path,nodes,time):
-    """从工作表读出速度"""
-    wb=xlrd.open_workbook(path)
-    ws=wb.sheet_by_index(time+1)
+def read_speed(speedlist,nodes):
+    """读出速度"""
+    #应用迭代器
+    s = iter(speedlist)
     for i in range(0,len(nodes)):
         for j in range(0,len(nodes[i].adjcent_link)):
-            nodes[i].adjcent_link[j].speed=ws.cell(i,j).value
+            #利用生成器表达式
+            nodes[i].adjcent_link[j].speed=s.next()
 
 def print_node(nodes):
     """打印每个节点连接点"""
@@ -186,8 +187,10 @@ def coding(nodes,s_node,d_node):
         #若下一节点重复则重新选择
         while t_link.next_node.index in new_r.route:
             t_link = choice(n_node.adjcent_link)
-        
-        new_r.time+=(round(t_link.length/t_link.speed,2)+t_link.next_node.delay)
+        if t_link.speed != 0:
+            new_r.time+=(round(t_link.length/t_link.speed,2)+t_link.next_node.delay)
+        else:
+            new_r.time+=10000
         new_r.route.append(t_link.next_node.index)
         n_node=t_link.next_node
     
@@ -256,7 +259,10 @@ def recaculate_t(R,nodes):
         no1=nodes[R.route[i]]
         no2=nodes[R.route[i+1]]
         L=inquire(no1,no2)
-        T+=(round(L.length/L.speed,2)+L.next_node.delay)
+        if L.speed != 0:
+            T+=(round(L.length/L.speed,2)+L.next_node.delay)
+        else:
+            T+=10000
     R.time=T
 
 def crossover(routes,nodes,pc):
@@ -317,13 +323,6 @@ def mutation(routes,nodes,d_node,pm):
             recaculate_t(new_route,nodes)
             routes[i]=new_route
 
-def read_speed(speedlist,nodes,time):
-    """读出速度"""
-    unit_list=speedlist[time]
-    n=0
-    for i in range(0,len(nodes)):
-        for j in range(0,len(nodes[i].adjcent_link)):
-            nodes[i].adjcent_link[j].speed=unit_list[n]
 
 
 def GAmain(nodes,s_node,d_node,gen,pop_size,pc,pm,pe,pk):

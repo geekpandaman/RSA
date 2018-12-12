@@ -3,6 +3,7 @@ import Dij
 from math import sqrt
 from Dij import Route
 import time
+import cPickle as pickle
 
 import sys
 sys.setrecursionlimit(100000)
@@ -23,7 +24,9 @@ d_node=int(raw_input('设置终点：'))
 
 start_t=time.clock()
 #从工作簿读第一个时间单元的数据
-Dij.read_speed(data_path,nodes,0)
+
+speedlist = pickle.load(open(data_path+'speed.dat','rb'))
+Dij.read_speed(speedlist,nodes)
 
 #对每个起点应用dij算法
 r,t=Dij.dijkstra(nodes,source[0],d_node)

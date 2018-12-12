@@ -24,8 +24,11 @@ while s_node != num**2:
 d_node=int(raw_input('设置终点：'))
 
 def RSA_main(data_path,num,source,d_node,c_para,e_range,speed_path):
+    #创建速度文件对象
+    file_s = open(speed_path,'rb')
+
     nodes=fun.read_node(data_path+'ad_node.xlsx',data_path+'link_length.xlsx',data_path+'node_axis.xlsx',data_path+'ave_delay.xlsx')
-    speed_list=pickle.load(open(speed_path,"rb"))
+    
     print('线程开始')
     start_t=time.clock()
     a_node=[]#激活的节点列表
@@ -35,9 +38,12 @@ def RSA_main(data_path,num,source,d_node,c_para,e_range,speed_path):
 
     w_node=[] #等待的节点
     time_unit=30 #时间单元为30s
-
     clock=0
-    fun.read_speed(speed_list,nodes,0)
+
+    #读取新一时间单元的速度并赋值给对象
+    speed_list = pickle.load(file_s)
+    fun.read_speed(speed_list,nodes)
+
     #循环条件,终点为26
     while nodes[d_node].last_node == 0:
         #为等待中和已经激活的节点添加时间
@@ -75,15 +81,17 @@ def RSA_main(data_path,num,source,d_node,c_para,e_range,speed_path):
 
         fun.update_speed(nodes) #更新道路速度
         clock+=1
-        fun.read_speed(speed_list,nodes,clock)
+        #读取新一时间单元的速度并赋值给对象
+        speed_list = pickle.load(file_s)
+        fun.read_speed(speed_list,nodes)
 
 
 
-
+    file_s.close()
     route=fun.trace_back(nodes[d_node])
     finish_t=time.clock()
 
-   
+    
     r_time=fun.real_time(nodes,route,d_node,data_path)
 
     print(c_para,e_range)

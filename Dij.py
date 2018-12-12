@@ -206,12 +206,14 @@ def draw_net(nodes,size,source,d_node,route,data_path):
     plt.show()
     
     
-def read_speed(speedlist,nodes,time):
-    unit_list=speedlist[time]
-    n=0
+def read_speed(speedlist,nodes):
+    """读出速度"""
+    #应用迭代器
+    s = iter(speedlist)
     for i in range(0,len(nodes)):
         for j in range(0,len(nodes[i].adjcent_link)):
-            nodes[i].adjcent_link[j].speed=unit_list[n]
+            #利用生成器表达式
+            nodes[i].adjcent_link[j].speed=s.next()
 
 
 def inquire(n1,n2):
@@ -230,8 +232,9 @@ def real_time(nodes,route,destination,data_path):
 
     time_unit=0
     remain_t=30
-    speedlist=pickle.load(open(data_path+'speed.dat','rb'))
-    read_speed(speedlist,nodes,time_unit)
+    file_s = open(data_path+'speed.dat','rb')
+    speedlist=pickle.load(file_s)
+    read_speed(speedlist,nodes)
     #标示当前节点索引
     n=0
     #当前链接已经走过的距离
@@ -249,7 +252,11 @@ def real_time(nodes,route,destination,data_path):
             
         while remain_t <= 0:
             time_unit+=1
-            read_speed(speedlist,nodes,time_unit)
+            try:
+                speedlist=pickle.load(file_s)
+                read_speed(speedlist,nodes)
+            except:
+                return 4500
             remain_t+=30
-    
+    file_s.close()
     return 30*(time_unit+1)-remain_t

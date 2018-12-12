@@ -41,16 +41,19 @@ print('种群保留比例：'+str(pk))
 
 start_t=time.clock()
 
-speed_list=pickle.load(open(data_path+"speed.dat","rb"))
+
+
 
 for s_node in source:
+    file_s = open(data_path+"speed.dat","rb")
     #实际路径
     pra_route=GAfun.Route([],0)
     pra_route.route.append(s_node)
 
     #更新当前单元的速度
     time_unit=0
-    GAfun.read_speed(speed_list,nodes,time_unit)
+    speed_list=pickle.load(file_s)
+    GAfun.read_speed(speed_list,nodes)
     remain_t=30
     #表示当前节点索引
     n=s_node
@@ -73,11 +76,17 @@ for s_node in source:
 
         while remain_t <= 0:
             time_unit+=1
-            GAfun.read_speed(speed_list,nodes,time_unit)
+            try:
+                speed_list=pickle.load(file_s)
+                GAfun.read_speed(speed_list,nodes)
+            except:
+                n = d_node
+                break
             remain_t+=30
     
     pra_route.time=30*(time_unit+1)-remain_t
     pra_route_list.append(pra_route)
+    file_s.close()
 
 #快排后取最小路径
 GAfun.Qsort(pra_route_list,0,len(pra_route_list)-1)

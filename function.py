@@ -137,70 +137,82 @@ def add_speed_sheet(path,nodes,time):
 def write_speed(path,nodes,time):
     """速度工作簿,并随机出所有时间节点的速度表,c_para表示修正频率，e_range表示预测误差范围"""
     init_speed(nodes)
-    speedList=[]
+    path1=path+"speed.dat"
+    file = open(path1,'wb')
+
 
     for t in range(0,time):
         unitSpeed=[]
         for i in range(0,len(nodes)):
             for j in range(0,len(nodes[i].adjcent_link)):
                 unitSpeed.append(nodes[i].adjcent_link[j].speed)
-        speedList.append(unitSpeed)
+        pickle.dump(unitSpeed,file)
         update_speed(nodes)
     
-    path1=path+"speed.dat"
-    pickle.dump(speedList,open(path1,"wb"))
+    file.close()
     
 
 def write_error(path,nodes,time,e_range):
 
-    e_list=[]
+    path2=path+str(e_range)+"pre_e.dat"
+    file = open(path2,'wb')
+
     for t in range(0,time):
         unitError=[]
         for i in range(0,len(nodes)):
             for j in range(0,len(nodes[i].adjcent_link)):
                 value=round(uniform(-e_range,e_range),6)
                 unitError.append(value)
-        e_list.append(unitError)
+        pickle.dump(unitError,file)
     
-    path2=path+str(e_range)+"pre_e.dat"
-    pickle.dump(e_list,open(path2,"wb"))
+    file.close()
 
 
 def p_write_speed(path,time,c_para,e_range):
-    """生成不同条件下的速度表"""
-    speedList=pickle.load(open(path+'speed.dat'))
-    e_list=pickle.load(open(path+str(e_range)+"pre_e.dat"))
+    """生成不同条件下的速度表,预测矩阵要少一个时间单元"""
+    file_S = open(path+'speed.dat','rb')
+    file_E = open(path+str(e_range)+"pre_e.dat",'rb')
+    file_P = open(path+str(c_para)+'_'+str(e_range)+'_'+"pre_speed.dat",'wb')
+
+    speedList=pickle.load(file_S)
+    e_list=pickle.load(file_E)
     #累计误差矩阵
     accum_e=[]
-    for n in range(0,len(e_list[0])):
+    for n in range(0,len(e_list)):
         accum_e.append(1)
     pre_speed=[]
-    for t in range(0,time):
+    for t in range(0,time-1):
         if t%c_para ==0:
             for n in range(0,len(accum_e)):
                 accum_e[n]=1
         else:
             for n in range(0,len(accum_e)):
-                accum_e[n]+=e_list[t][n]
+                accum_e[n]+=e_list[n]
                 if accum_e[n] < 0:
                     accum_e[n]=0
         pre_unit=[]
-        for n in range(0,len(speedList[0])):
-            pre_unit.append(speedList[t][n]*accum_e[n])
-        pre_speed.append(pre_unit)
+        for n in range(0,len(speedList)):
+            pre_unit.append(speedList[n]*accum_e[n])
+        #向文件添加新的预测矩阵
+        pickle.dump(pre_unit,file_P)
+    
+        #更新当前时间单元的速度矩阵和误差矩阵
+        speedList=pickle.load(file_S)
+        e_list=pickle.load(file_E)
         
     
-    path=path+str(c_para)+'_'+str(e_range)+'_'+"pre_speed.dat"
-    pickle.dump(pre_speed,open(path,"wb"))
-        
+    file_E.close()
+    file_P.close()
+    file_S.close()
 
-def read_speed(speedlist,nodes,time):
+def read_speed(speedlist,nodes):
     """读出速度"""
-    unit_list=speedlist[time]
-    n=0
+    #应用迭代器
+    s = iter(speedlist)
     for i in range(0,len(nodes)):
         for j in range(0,len(nodes[i].adjcent_link)):
-            nodes[i].adjcent_link[j].speed=unit_list[n]
+            #利用生成器表达式
+            nodes[i].adjcent_link[j].speed=s.next()
 
 
 def init_speed(nodes):
@@ -376,8 +388,11 @@ def real_time(nodes,route,destination,data_path):
     time_unit=0
     remain_t=30
     speed_path=data_path+"speed.dat"
-    speedlist=pickle.load(open(speed_path,"rb"))
-    read_speed(speedlist,nodes,time_unit)
+    #创建速度文件对象
+    file_s = open(speed_path,'rb')
+    #读取新一时间单元的速度并赋值给对象
+    speed_list = pickle.load(file_s)
+    read_speed(speed_list,nodes)
     #标示当前节点索引
     n=0
     #当前链接已经走过的距离
@@ -395,9 +410,11 @@ def real_time(nodes,route,destination,data_path):
             
         while remain_t <= 0:
             time_unit+=1
-            read_speed(speedlist,nodes,time_unit)
+            #读取新一时间单元的速度并赋值给对象
+            speed_list = pickle.load(file_s)
+            read_speed(speed_list,nodes)
             remain_t+=30
-    
+    file_s.close()
     return 30*(time_unit+1)-remain_t
         
 def routeLength(nodes,route):
