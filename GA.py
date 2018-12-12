@@ -4,6 +4,7 @@ import time
 from math import sqrt
 import cPickle as pickle
 
+
 gen=50 #迭代次数
 pop_size=80 #种群数量
 
@@ -63,6 +64,7 @@ for s_node in source:
     while n !=d_node:
         print(n)
         next_n=GAfun.GAmain(nodes,n,d_node,gen,pop_size,pc,pm,pe,pk)
+        #next_n=GAfun.dijkstra(nodes,n,d_node)
         t_link=GAfun.inquire(nodes[n],nodes[next_n])
         c_length+=remain_t*t_link.speed
         remain_t=0

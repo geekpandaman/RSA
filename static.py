@@ -5,9 +5,6 @@ from Dij import Route
 import time
 import cPickle as pickle
 
-import sys
-sys.setrecursionlimit(100000)
-
 #从文件读路网
 data_path=raw_input('请输入数据文件夹路径（以/结尾）')
 nodes=Dij.read_node(data_path+'ad_node.xlsx',data_path+'link_length.xlsx',data_path+'node_axis.xlsx',data_path+'ave_delay.xlsx')

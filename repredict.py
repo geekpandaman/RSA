@@ -22,7 +22,7 @@ e_range=float(raw_input("新增预测误差："))
 e_list=[]
 while e_range != 0:
     e_list.append(e_range)
-    fun.write_error(data_path,nodes,time_units,e_range)
+    #fun.write_error(data_path,nodes,time_units,e_range)
     e_range=float(raw_input("新增预测误差："))
 
 pre=int(raw_input("新增预测数据："))

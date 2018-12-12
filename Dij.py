@@ -6,7 +6,7 @@ class Node():
     def __init__(self,node_index,ave_delay,x_value,y_value):
 
         self.adjcent_link=[]   #邻近连接数组
-        self.status=0  #定义路口状态 inactive=0 wating=1 active=2 dead=3
+        #self.status=0定义路口状态 inactive=0 wating=1 active=2 dead=3
         self.delay=ave_delay
         self.X=x_value
         self.Y=y_value
@@ -40,7 +40,6 @@ class Route():
 
 
 import xlrd
-import copy
 import numpy as np
 import matplotlib.pyplot as plt
 import cPickle as pickle
@@ -77,9 +76,9 @@ def read_node(path1,path2,path3,path4):
     print('初始化链接成功')
     return nodes
 
-def dijkstra(nodes_copy,s_node,d_node):
+def dijkstra(nodes,s_node,d_node):
     """求一次最短路径问题，返回值为当前路口转向决策,列表为传值，起重点参数为索引。返回值为路径列表和终点权值"""
-    nodes=copy.deepcopy(nodes_copy) #利用深复制使函数传值
+    #nodes=copy.deepcopy(nodes_copy)利用深复制使函数传值，递规复制，内存报错
     permanent=[] #permanent标号的集
     p_node=nodes[s_node] #最新的permanent标号点
     permanent.append(p_node)
@@ -129,6 +128,7 @@ def dijkstra(nodes_copy,s_node,d_node):
                 i+=1
     
     route=trace_back(nodes[d_node])
+    reset_nodes(nodes)
     return (route,nodes[d_node].weight)
 
 def trace_back(r_node):
@@ -260,3 +260,11 @@ def real_time(nodes,route,destination,data_path):
             remain_t+=30
     file_s.close()
     return 30*(time_unit+1)-remain_t
+
+def reset_nodes(nodes):
+    """在一次dij后将路网恢复到原始状态，代替深复制传值的解决方案"""
+    for i in range(0,len(nodes)):
+        node = nodes[i]
+        node.weight = 0
+        node.last_node = 0
+        node.status = False
