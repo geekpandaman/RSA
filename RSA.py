@@ -5,23 +5,19 @@ import time
 from math import sqrt
 from function import Route
 import cPickle as pickle
-
-
+import csv
+import sys
 
 #nodes=fun.read_node('data/link_list_node50.xlsx','data/length_node50.xlsx')#从excwl读入节点列表
 
-data_path=raw_input('请输入数据文件夹路径（以/结尾）')
+data_path=sys.argv[1]
 nodes=fun.read_node(data_path+'ad_node.xlsx',data_path+'link_length.xlsx',data_path+'node_axis.xlsx',data_path+'ave_delay.xlsx')
 num=int(sqrt(len(nodes)))
 
 
-source=[]
-s_node=int(raw_input('请输入起点：'))
-while s_node != num**2:
-    source.append(s_node)
-    s_node=int(raw_input('请添加下一节点，输入节点个数停止添加：'))
+source=[int(sys.argv[x]) for x in range(2,6)]
 
-d_node=int(raw_input('设置终点：'))
+d_node=int(sys.argv[6])
 
 def RSA_main(data_path,num,source,d_node,c_para,e_range,speed_path):
     #创建速度文件对象
@@ -93,14 +89,15 @@ def RSA_main(data_path,num,source,d_node,c_para,e_range,speed_path):
 
     
     r_time=fun.real_time(nodes,route,d_node,data_path)
-
+    """
     print(c_para,e_range)
     print(route)
     print('预测时间为：'+str(clock*30))
     print('实际时间为：'+str(r_time))
     print('RSA运行时间为'+str(finish_t-start_t))
+    """
 
-    
+    """
     #实验数据存储文件
     filename=data_path+'result.txt'
     #写入实验数据
@@ -119,22 +116,22 @@ def RSA_main(data_path,num,source,d_node,c_para,e_range,speed_path):
         file.write('RSA实际时间为：'+str(r_time)+'\n')
         file.write('RSA运行时间为'+str(finish_t-start_t)+'\n')
         file.write('----------------------')
-    
+    """
+    csv_file=data_path+str(c_para)+'_'+str(e_range)+'result.csv'
+    with open(csv_file,'a') as file:
+        csv_write=csv.writer(file,dialect='excel')
+        csv_write.writerow([str(finish_t-start_t)[0:4],str(r_time)[0:7],fun.routeLength(nodes,route)])
+
+    """
     if e_range==0:
         jpg_path=data_path+str(c_para)+'_'+str(e_range)+'_' 
         fun.draw_net(nodes,num,source,d_node,route,jpg_path)       
-
+    """
 
 def loop(data_path,num,source,d_node):
     RSA_main(data_path,num,source,d_node,0,0,data_path+"speed.dat")
-    c_paras=[]
-    for i in range(0,4):
-        c_para=int(raw_input('纠正频率：'))
-        c_paras.append(c_para)
-    e_ranges=[]
-    for i in range(0,5):
-        e_range=float(raw_input('误差范围：'))
-        e_ranges.append(e_range)
+    c_paras=[5,10,15,500]
+    e_ranges=[0.05,0.1,0.15,0.2,0.25]
     
     for e_range in e_ranges:
         for c_para in c_paras:

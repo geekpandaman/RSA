@@ -164,7 +164,7 @@ def draw_net(nodes,size,source,d_node,route,data_path):
 
     plt.axis([-1,size*1.1,-1,size*1.1])
     plt.rcParams['savefig.dpi'] = 300
-    plt.savefig(data_path+"best_route_GA.png")
+    plt.savefig(data_path+"best_route_DPO.png")
     plt.show()
 def compare(route,node):
     """判断路径是否进入死胡同，传入节点对象,进入死胡同则返回True"""

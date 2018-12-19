@@ -128,8 +128,9 @@ def dijkstra(nodes,s_node,d_node):
                 i+=1
     
     route=trace_back(nodes[d_node])
+    R_weight = nodes[d_node].weight
     reset_nodes(nodes)
-    return (route,nodes[d_node].weight)
+    return (route,R_weight)
 
 def trace_back(r_node):
     """回溯路径"""

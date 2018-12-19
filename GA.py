@@ -63,8 +63,8 @@ for s_node in source:
  
     while n !=d_node:
         print(n)
-        next_n=GAfun.GAmain(nodes,n,d_node,gen,pop_size,pc,pm,pe,pk)
-        #next_n=GAfun.dijkstra(nodes,n,d_node)
+        #next_n=GAfun.GAmain(nodes,n,d_node,gen,pop_size,pc,pm,pe,pk)
+        next_n=GAfun.dijkstra(nodes,n,d_node)
         t_link=GAfun.inquire(nodes[n],nodes[next_n])
         c_length+=remain_t*t_link.speed
         remain_t=0
@@ -106,11 +106,11 @@ filename=data_path+'result.txt'
 #写入实验数据
 with open(filename,'a') as file:
     file.write('\n')
-    file.write('GA最短路径为：')
+    file.write('DPO最短路径为：')
     file.write(str(pra_route.route))
     file.write('路径长度为'+str(GAfun.routeLength(nodes,pra_route.route)))
     file.write('\n')
-    file.write('GA实际时间为'+str(pra_route.time)+'\n')
-    file.write('GA运行时间为'+str(finish_t-start_t)+'\n')
+    file.write('DPO实际时间为'+str(pra_route.time)+'\n')
+    file.write('DPO运行时间为'+str(finish_t-start_t)+'\n')
 
 GAfun.draw_net(nodes,num,source,d_node,pra_route.route,data_path)

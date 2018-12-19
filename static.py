@@ -58,4 +58,4 @@ with open(filename,'a') as file:
     file.write('Dij实际时间为'+str(r_time)+'\n')
     file.write('Dij运行时间为'+str(finish_t-start_t)+'\n')
 
-Dij.draw_net(nodes,num,source,d_node,best_route.route,data_path)
+#Dij.draw_net(nodes,num,source,d_node,best_route.route,data_path)
