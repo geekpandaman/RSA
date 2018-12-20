@@ -120,7 +120,7 @@ def RSA_main(data_path,num,source,d_node,c_para,e_range,speed_path):
     csv_file=data_path+str(c_para)+'_'+str(e_range)+'result.csv'
     with open(csv_file,'a') as file:
         csv_write=csv.writer(file,dialect='excel')
-        csv_write.writerow([str(finish_t-start_t)[0:4],str(r_time)[0:7],fun.routeLength(nodes,route)])
+        csv_write.writerow([str(finish_t-start_t)[0:4],str(r_time)[0:7],str(fun.routeLength(nodes,route)/3.6)[0:5]])
 
     """
     if e_range==0:
