@@ -33,6 +33,11 @@ with open(csv_file,'w') as file:
         csv_write=csv.writer(file,dialect='excel')
         csv_write.writerow(['RunTime','RealTime','RouteLength'])
 
+csv_file=data_path+'OLRO_result.csv'
+with open(csv_file,'w') as file:
+        csv_write=csv.writer(file,dialect='excel')
+        csv_write.writerow(['RunTime','RealTime','RouteLength'])
+
 for e in e_list:
     for p in p_list:
         csv_file=data_path+str(p)+'_'+str(e)+'result.csv'

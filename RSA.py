@@ -15,9 +15,9 @@ nodes=fun.read_node(data_path+'ad_node.xlsx',data_path+'link_length.xlsx',data_p
 num=int(sqrt(len(nodes)))
 
 
-source=[int(sys.argv[x]) for x in range(2,6)]
+source=[int(sys.argv[x]) for x in range(2,3)]
 
-d_node=int(sys.argv[6])
+d_node=int(sys.argv[3])
 
 def RSA_main(data_path,num,source,d_node,c_para,e_range,speed_path):
     #创建速度文件对象
@@ -78,7 +78,14 @@ def RSA_main(data_path,num,source,d_node,c_para,e_range,speed_path):
         fun.update_speed(nodes) #更新道路速度
         clock+=1
         #读取新一时间单元的速度并赋值给对象
-        speed_list = pickle.load(file_s)
+        try:
+            speed_list = pickle.load(file_s)
+        except EOFError:
+                csv_file=data_path+str(c_para)+'_'+str(e_range)+'result.csv'
+                with open(csv_file,'a') as file:
+                    csv_write=csv.writer(file,dialect='excel')
+                    csv_write.writerow(['RSAEOFERROR!','RSAEOFERROR!','RSAEOFERROR!'])
+                return None
         fun.read_speed(speed_list,nodes)
 
 

@@ -3,8 +3,10 @@ import GAfun
 import time
 from math import sqrt
 import cPickle as pickle
+import sys
+import csv
 
-
+"""
 gen=50 #迭代次数
 pop_size=80 #种群数量
 
@@ -13,25 +15,19 @@ pm=0.1 #变异概率
 
 pe=0.1 #精英法则比例
 pk=1 #种群保留比例
-
+"""
 
 #读入节点
-data_path=raw_input('请输入数据文件夹路径（以/结尾）')
+data_path=sys.argv[1]
 nodes=GAfun.read_node(data_path+'ad_node.xlsx',data_path+'link_length.xlsx',data_path+'node_axis.xlsx',data_path+'ave_delay.xlsx')
 num=int(sqrt(len(nodes)))
 
-#输入多个起点
-source=[]
-s_node=int(raw_input('请输入起点：'))
-while s_node != num**2:
-    source.append(s_node)
-    s_node=int(raw_input('请添加下一节点，输入节点个数停止添加：'))
-
-d_node=int(raw_input('请输入终点：'))
+source=[int(sys.argv[x]) for x in range(2,3)]
+d_node=int(sys.argv[3])
 
 #实际路径集
 pra_route_list=[]
-
+"""
 #显示算法初始状态
 print('迭代次数为：'+str(gen))
 print('种群数量：'+str(pop_size))
@@ -39,7 +35,7 @@ print('交叉概率:'+str(pc))
 print('变异概率：'+str(pm))
 print('精英法则比例：'+str(pe))
 print('种群保留比例：'+str(pk))
-
+"""
 start_t=time.clock()
 
 
@@ -62,7 +58,6 @@ for s_node in source:
     c_length=0
  
     while n !=d_node:
-        print(n)
         #next_n=GAfun.GAmain(nodes,n,d_node,gen,pop_size,pc,pm,pe,pk)
         next_n=GAfun.dijkstra(nodes,n,d_node)
         t_link=GAfun.inquire(nodes[n],nodes[next_n])
@@ -100,7 +95,7 @@ finish_t=time.clock()
 print(pra_route.route)
 print('GA实际时间为'+str(pra_route.time))
 print('GA运行时间为'+str(finish_t-start_t))
-
+"""
 #实验数据存储文件
 filename=data_path+'result.txt'
 #写入实验数据
@@ -114,3 +109,8 @@ with open(filename,'a') as file:
     file.write('DPO运行时间为'+str(finish_t-start_t)+'\n')
 
 GAfun.draw_net(nodes,num,source,d_node,pra_route.route,data_path)
+"""
+csv_file=data_path+'OLRO_result.csv'
+with open(csv_file,'a') as file:
+    csv_write=csv.writer(file,dialect='excel')
+    csv_write.writerow([str(finish_t-start_t)[0:4],str(pra_route.time)[0:7],str(GAfun.routeLength(nodes,pra_route.route)/3.6)[0:5]])

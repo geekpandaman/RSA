@@ -50,6 +50,8 @@ from random import randint
 from random import uniform
 from random import choice
 import os
+
+
 def read_node(path1,path2,path3,path4):
     """从excel初始化节点列表,path1为邻接表，path2为路径长度表，path3为节点坐标表，path4为平均延误表"""
 
@@ -382,8 +384,11 @@ def dijkstra(nodes,s_node,d_node):
     while nodes[d_node].last_node == 0:
         #对新选择的标号节点p_node，检查邻近节点的标号,进行temp标号
         for link in p_node.adjcent_link:
-            #weight=p_node.weight+link.length/link.speed+link.next_node.delay
-            weight=p_node.weight+link.length
+            if link.speed == 0:
+                weight = 10000
+            else:
+                weight=p_node.weight+link.length/link.speed+link.next_node.delay
+            #weight=p_node.weight+link.length
             #比较并更新新节点标号
             if link.next_node.status == False: 
                 if link.next_node.weight > (weight+p_node.weight) or link.next_node.weight == 0:

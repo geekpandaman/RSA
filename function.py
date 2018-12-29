@@ -410,8 +410,11 @@ def real_time(nodes,route,destination,data_path):
             
         while remain_t <= 0:
             time_unit+=1
-            #读取新一时间单元的速度并赋值给对象
-            speed_list = pickle.load(file_s)
+            #防止时间超过真实速度矩阵最大时间
+            try:
+                speed_list = pickle.load(file_s)
+            except EOFError:
+                return time_unit*30
             read_speed(speed_list,nodes)
             remain_t+=30
     file_s.close()
